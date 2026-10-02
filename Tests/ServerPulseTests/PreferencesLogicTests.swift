@@ -22,7 +22,7 @@ final class PreferencesLogicTests: XCTestCase {
     }
 
     func testSSHTarget() {
-        XCTAssertEqual(PreferencesLogic.sshTarget(" deploy@46.225.72.0 "), "deploy@46.225.72.0")
+        XCTAssertEqual(PreferencesLogic.sshTarget(" deploy@203.0.113.10 "), "deploy@203.0.113.10")
         XCTAssertNil(PreferencesLogic.sshTarget("   "))
         XCTAssertNil(PreferencesLogic.sshTarget("deploy@host; rm -rf"))
     }

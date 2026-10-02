@@ -62,6 +62,16 @@ final class NotificationManagerTests: XCTestCase {
         XCTAssertEqual(scheduler.requests.first?.content.title, "Ambulance")
     }
 
+    func testRequestAuthorizationRunsOnce() async {
+        let scheduler = FakeScheduler()
+        let manager = NotificationManager(scheduler: scheduler)
+        manager.requestAuthorization()
+        await Task.yield()
+        manager.post([event(.raised, .containerDown, "web")], thresholds: thresholds)
+        await Task.yield()
+        XCTAssertEqual(scheduler.authRequests, 1)
+    }
+
     func testNothingToPostSkipsAuthorization() async {
         let scheduler = FakeScheduler()
         NotificationManager(scheduler: scheduler).post([event(.raised, .authFailed)], thresholds: thresholds)

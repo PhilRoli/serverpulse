@@ -25,6 +25,10 @@ protocol MetricsFetching: Sendable {
 struct AgentClient: MetricsFetching {
     var transport: HTTPTransport = URLSessionTransport()
 
+    private static let offlineCodes: Set<URLError.Code> = [
+        .notConnectedToInternet, .networkConnectionLost, .dataNotAllowed, .internationalRoamingOff
+    ]
+
     func fetch(url: URL, token: String) async throws -> AgentSnapshot {
         var request = URLRequest(url: url)
         request.timeoutInterval = 10
@@ -36,6 +40,8 @@ struct AgentClient: MetricsFetching {
             throw CancellationError()
         } catch is CancellationError {
             throw CancellationError()
+        } catch let error as URLError where Self.offlineCodes.contains(error.code) {
+            throw MonitorError.offline
         } catch {
             throw MonitorError.unreachable
         }

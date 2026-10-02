@@ -2,6 +2,11 @@ services:
   agent:
     build: .
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "3"
     read_only: true
     ports:
       - "127.0.0.1:4099:5000"

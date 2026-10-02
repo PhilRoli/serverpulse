@@ -53,7 +53,7 @@ enum HealthEvaluator {
         switch error {
         case .unauthorized: return .authFailed
         case .outdatedAgent: return .agentOutdated
-        case .decoding, .http, .unreachable: return .agentUnreachable
+        case .decoding, .http, .unreachable, .offline: return .agentUnreachable
         }
     }
 

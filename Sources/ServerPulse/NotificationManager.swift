@@ -22,6 +22,10 @@ final class NotificationManager {
         self.scheduler = scheduler
     }
 
+    func requestAuthorization() {
+        requestAuthIfNeeded()
+    }
+
     func post(_ events: [AlertEvent], thresholds: Thresholds) {
         let messages = events.compactMap { Self.message(for: $0, thresholds: thresholds) }
         guard !messages.isEmpty else { return }
