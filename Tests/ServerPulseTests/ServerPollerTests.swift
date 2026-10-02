@@ -154,4 +154,30 @@ final class ServerPollerTests: XCTestCase {
 
         XCTAssertEqual(poller.states[server.id], .loading)
     }
+
+    func testParkedServerIsNotFetchedAgain() async {
+        let poller = makePoller()
+        client.results = [.failure(.unauthorized), .success(.fixture())]
+        await poller.refresh(server.id)
+        let calls = client.calls.count
+        await poller.refresh(server.id)
+        XCTAssertEqual(client.calls.count, calls)
+        XCTAssertEqual(poller.states[server.id], .error(.unauthorized))
+    }
+
+    func testRefreshNowSkipsParkedServers() async {
+        let second = ServerConfig.fixture(name: "Beta", url: "https://b.example/metrics")
+        config.servers.append(second)
+        tokens.tokens[second.id] = "tok2"
+        let poller = makePoller()
+        client.results = [.failure(.unauthorized)]
+        await poller.refresh(server.id)
+        XCTAssertTrue(poller.isParked(server.id))
+        let calls = client.calls.count
+        client.results = [.success(.fixture())]
+        poller.refreshNow()
+        for _ in 0..<5 { await Task.yield() }
+        let newCalls = client.calls.dropFirst(calls)
+        XCTAssertEqual(newCalls.map(\.token), ["tok2"])
+    }
 }

@@ -71,7 +71,7 @@ final class ServerPoller {
     func generation(of id: UUID) -> Int? { entries[id]?.generation }
 
     func refresh(_ id: UUID) async {
-        guard let entry = entries[id], !entry.isRefreshing else { return }
+        guard let entry = entries[id], !entry.isRefreshing, !entry.parked else { return }
         let generation = entry.generation
         entries[id]?.isRefreshing = true
         defer { if entries[id]?.generation == generation { entries[id]?.isRefreshing = false } }
