@@ -21,9 +21,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
 
     override init() {
         super.init()
-        let image = NSImage(systemSymbolName: "server.rack", accessibilityDescription: "ServerPulse")
-        image?.isTemplate = true
-        statusItem.button?.image = image
+        statusItem.button?.image = StatusIcon.image(for: .normal)
         statusItem.button?.imagePosition = .imageLeading
         menu.delegate = self
         menu.autoenablesItems = false
@@ -32,18 +30,10 @@ final class StatusBarController: NSObject, NSMenuDelegate {
 
     func setTitle(_ title: StatusTitle) {
         guard let button = statusItem.button else { return }
-        let color: NSColor? = switch title.tint {
-        case .normal: nil
-        case .red: .systemRed
-        case .orange: .systemOrange
-        }
-        button.contentTintColor = color
+        button.image = StatusIcon.image(for: title.tint)
         button.attributedTitle = NSAttributedString(
             string: title.text.isEmpty ? "" : " \(title.text)",
-            attributes: [
-                .font: NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .medium),
-                .foregroundColor: color ?? NSColor.labelColor
-            ])
+            attributes: StatusIcon.titleAttributes(for: title.tint))
     }
 
     // MARK: NSMenuDelegate
