@@ -49,3 +49,24 @@ enum JSONFixtures {
      "cpu_load_1m":0.14,"memory":{"used_mb":3000,"total_mb":8192},"disk_pct":45}
     """
 }
+
+final class FakeClient: MetricsFetching, @unchecked Sendable {
+    var results: [Result<AgentSnapshot, MonitorError>] = []
+    private(set) var calls: [(url: URL, token: String)] = []
+    var gate: (() async -> Void)?
+
+    func fetch(url: URL, token: String) async throws -> AgentSnapshot {
+        calls.append((url, token))
+        if let gate { await gate() }
+        guard !results.isEmpty else { throw MonitorError.unreachable }
+        return try results.removeFirst().get()
+    }
+}
+
+final class FakeTokens: TokenStoring, @unchecked Sendable {
+    var tokens: [UUID: String] = [:]
+
+    func token(for id: UUID) throws -> String? { tokens[id] }
+    func setToken(_ token: String, for id: UUID) throws { tokens[id] = token }
+    func deleteToken(for id: UUID) throws { tokens[id] = nil }
+}
