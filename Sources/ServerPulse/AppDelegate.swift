@@ -12,6 +12,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var notifications = NotificationManager(scheduler: UNUserNotificationCenter.current())
     private var tracker = AlertTracker()
     private var config = AppConfig()
+    private var prefs: PreferencesWindowController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.mainMenu = MainMenu.make()
@@ -56,7 +57,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusBar.setTitle(StatusTitle.make(issues: issues, anyStale: anyStale))
     }
 
-    func showPreferences() {
-        // Implemented in Task 12.
+    private func showPreferences() {
+        if prefs == nil {
+            let controller = PreferencesWindowController(config: config, tokens: tokens, client: client,
+                                                         loginItem: LoginItemController())
+            controller.onChange = { [unowned self] newConfig, tokenChanged in
+                self.apply(newConfig, tokenChanged: tokenChanged)
+            }
+            prefs = controller
+        }
+        prefs?.show()
+    }
+
+    private func apply(_ newConfig: AppConfig, tokenChanged: Set<UUID>) {
+        let removed = Set(config.servers.map(\.id)).subtracting(newConfig.servers.map(\.id))
+        removed.forEach { tracker.remove(serverID: $0) }
+        config = newConfig
+        store.save(config)
+        poller.apply(config, tokenChanged: tokenChanged)
+        render()
     }
 }
