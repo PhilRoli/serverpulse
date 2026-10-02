@@ -10,6 +10,8 @@ final class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     let client: MetricsFetching
     let loginItem: LoginItemController
     var selectedID: UUID?
+    /// Set while reloading the table so the resulting selection callback doesn't overwrite `selectedID`.
+    var isReloading = false
 
     let table = NSTableView()
     let addRemove = NSSegmentedControl()
@@ -52,6 +54,7 @@ final class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func show() {
+        loginCheck.state = loginItem.isEnabled ? .on : .off
         showWindow(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
@@ -80,6 +83,7 @@ extension PreferencesWindowController: NSTableViewDataSource, NSTableViewDelegat
     }
 
     func tableViewSelectionDidChange(_ notification: Notification) {
+        guard !isReloading else { return }
         let row = table.selectedRow
         selectedID = config.servers.indices.contains(row) ? config.servers[row].id : nil
         loadDetail()
