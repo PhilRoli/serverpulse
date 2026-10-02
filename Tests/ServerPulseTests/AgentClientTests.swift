@@ -68,6 +68,11 @@ final class AgentClientTests: XCTestCase {
         await assertThrows(.unreachable, client)
     }
 
+    func testNoInternetIsOffline() async {
+        let client = AgentClient(transport: FakeTransport { _ in throw URLError(.notConnectedToInternet) })
+        await assertThrows(.offline, client)
+    }
+
     func testCancellationPropagates() async {
         let client = AgentClient(transport: FakeTransport { _ in throw URLError(.cancelled) })
         do {

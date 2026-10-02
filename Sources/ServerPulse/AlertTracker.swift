@@ -42,6 +42,7 @@ struct AlertTracker {
     }
 
     private static func trustsResolution(of issue: Issue, containers: Set<String>?) -> Bool {
+        if issue.kind == .dockerUnavailable { return containers != nil }
         guard issue.isSnapshotDerived else { return true }
         guard let containers else { return false }
         switch issue.kind {

@@ -13,10 +13,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var tracker = AlertTracker()
     private var config = AppConfig()
     private var prefs: PreferencesWindowController?
+    private var wakeObserver: NSObjectProtocol?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.mainMenu = MainMenu.make()
         UNUserNotificationCenter.current().delegate = presenter
+        notifications.requestAuthorization()
+        wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.poller.refreshNow() }
+        }
         config = store.load()
 
         statusBar.rows = { [unowned self] in
@@ -72,6 +78,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func apply(_ newConfig: AppConfig, tokenChanged: Set<UUID>) {
         let removed = Set(config.servers.map(\.id)).subtracting(newConfig.servers.map(\.id))
         removed.forEach { tracker.remove(serverID: $0) }
+        let oldURLs = Dictionary(config.servers.map { ($0.id, $0.url) }, uniquingKeysWith: { first, _ in first })
+        for server in newConfig.servers where oldURLs[server.id].map({ $0 != server.url }) ?? false {
+            tracker.remove(serverID: server.id)
+        }
         config = newConfig
         store.save(config)
         poller.apply(config, tokenChanged: tokenChanged)

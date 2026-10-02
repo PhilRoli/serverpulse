@@ -59,7 +59,7 @@ struct KeychainTokenStore: TokenStoring {
         process.standardError = Pipe()
         process.standardInput = stdin
         do { try process.run() } catch { return (-1, Data()) }
-        if let input { stdin.fileHandleForWriting.write(Data(input.utf8)) }
+        if let input { try? stdin.fileHandleForWriting.write(contentsOf: Data(input.utf8)) }
         try? stdin.fileHandleForWriting.close()
         let output = stdout.fileHandleForReading.readDataToEndOfFile()
         process.waitUntilExit()

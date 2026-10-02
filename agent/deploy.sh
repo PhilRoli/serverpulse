@@ -15,6 +15,8 @@ ssh "$TARGET" bash -s <<'REMOTE'
 set -euo pipefail
 cd /opt/apps/metrics-agent
 grep -q '^METRICS_TOKEN=.' .env || { echo "METRICS_TOKEN missing in .env" >&2; exit 1; }
+grep -q '^METRICS_TOKEN=change-me$' .env && { echo "METRICS_TOKEN is still the placeholder" >&2; exit 1; }
+chmod 600 .env
 [ -n "$(tail -c1 .env)" ] && echo >> .env
 GID="$(stat -c %g /var/run/docker.sock)"
 if grep -q '^DOCKER_GID=' .env; then

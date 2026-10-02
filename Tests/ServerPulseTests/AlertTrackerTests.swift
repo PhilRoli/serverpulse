@@ -44,6 +44,17 @@ final class AlertTrackerTests: XCTestCase {
                        [AlertEvent(change: .resolved, issue: unreachable)])
     }
 
+    func testDockerAvailableAgainNeedsSnapshot() {
+        var tracker = AlertTracker()
+        let docker = issue(.dockerUnavailable)
+        _ = tracker.update(serverID: id, issues: [docker], containers: [])
+        XCTAssertEqual(tracker.update(serverID: id, issues: [], containers: nil), [])
+        let again = issue(.dockerUnavailable)
+        _ = tracker.update(serverID: id, issues: [again], containers: [])
+        XCTAssertEqual(tracker.update(serverID: id, issues: [], containers: []),
+                       [AlertEvent(change: .resolved, issue: again)])
+    }
+
     func testValueChangesDoNotReRaise() {
         var tracker = AlertTracker()
         var disk = issue(.diskHigh)

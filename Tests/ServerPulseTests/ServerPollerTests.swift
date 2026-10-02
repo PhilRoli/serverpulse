@@ -53,6 +53,24 @@ final class ServerPollerTests: XCTestCase {
         XCTAssertEqual(poller.states[server.id], .error(.unreachable))
     }
 
+    func testOfflineKeepsSnapshotState() async {
+        let poller = makePoller()
+        let snap = AgentSnapshot.fixture()
+        client.results = [.success(snap), .failure(.offline), .failure(.offline)]
+        await poller.refresh(server.id)
+        await poller.refresh(server.id)
+        await poller.refresh(server.id)
+        XCTAssertEqual(poller.states[server.id], .ok(snap, at: clock))
+    }
+
+    func testOfflineWithoutSnapshotStaysLoading() async {
+        let poller = makePoller()
+        client.results = [.failure(.offline), .failure(.offline)]
+        await poller.refresh(server.id)
+        await poller.refresh(server.id)
+        XCTAssertEqual(poller.states[server.id], .loading)
+    }
+
     func testStaleAfterTwoFailuresKeepsLastSnapshot() async {
         let poller = makePoller()
         let snap = AgentSnapshot.fixture()

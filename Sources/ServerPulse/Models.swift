@@ -107,6 +107,7 @@ enum MonitorError: Error, Equatable {
     case decoding
     case http(Int)
     case unreachable
+    case offline
 
     var label: String {
         switch self {
@@ -115,6 +116,7 @@ enum MonitorError: Error, Equatable {
         case .decoding: return "Bad response"
         case .http(let code): return "HTTP \(code)"
         case .unreachable: return "Unreachable"
+        case .offline: return "Offline"
         }
     }
 }

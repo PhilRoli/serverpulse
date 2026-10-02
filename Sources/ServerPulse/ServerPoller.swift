@@ -108,6 +108,7 @@ final class ServerPoller {
             publish(id, .error(.unauthorized))
             return
         }
+        if error == .offline { return }
         entries[id]?.failures += 1
         guard let entry = entries[id], entry.failures >= 2 else { return }
         if let snapshot = entry.lastSnapshot, let at = entry.lastAt {
