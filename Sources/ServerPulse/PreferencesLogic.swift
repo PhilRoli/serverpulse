@@ -1,5 +1,11 @@
 import Foundation
 
+enum SSHEdit: Equatable {
+    case clear
+    case set(String)
+    case invalid
+}
+
 enum TokenInput: Equatable {
     case keep
     case set(String)
@@ -28,6 +34,12 @@ enum PreferencesLogic {
         let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: ".-_@:"))
         guard !trimmed.isEmpty, trimmed.unicodeScalars.allSatisfy(allowed.contains) else { return nil }
         return trimmed
+    }
+
+    /// Only an empty field clears the target; invalid text must not erase the saved value.
+    static func sshEdit(_ raw: String) -> SSHEdit {
+        if raw.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return .clear }
+        return sshTarget(raw).map(SSHEdit.set) ?? .invalid
     }
 
     static func newServer(existing: [ServerConfig]) -> ServerConfig {

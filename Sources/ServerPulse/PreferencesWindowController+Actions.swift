@@ -66,11 +66,17 @@ extension PreferencesWindowController {
     }
 
     @objc func sshEdited() {
-        let raw = sshField.stringValue
-        let target = PreferencesLogic.sshTarget(raw)
-        if target == nil, !raw.trimmingCharacters(in: .whitespaces).isEmpty { NSSound.beep() }
-        sshField.stringValue = target ?? ""
-        updateSelected { $0.sshTarget = target }
+        switch PreferencesLogic.sshEdit(sshField.stringValue) {
+        case .clear:
+            sshField.stringValue = ""
+            updateSelected { $0.sshTarget = nil }
+        case .set(let target):
+            sshField.stringValue = target
+            updateSelected { $0.sshTarget = target }
+        case .invalid:
+            NSSound.beep()
+            sshField.stringValue = selectedServer?.sshTarget ?? ""
+        }
     }
 
     @objc func tokenEdited() {
@@ -113,14 +119,23 @@ extension PreferencesWindowController {
     }
 
     @objc func addRemoveClicked() {
+        window?.makeFirstResponder(nil)
         if addRemove.selectedSegment == 0 { addServer() } else { removeServer() }
+    }
+
+    private func reloadTable() {
+        let id = selectedID
+        isReloading = true
+        table.reloadData()
+        isReloading = false
+        selectedID = id
     }
 
     private func addServer() {
         let server = PreferencesLogic.newServer(existing: config.servers)
         config.servers.append(server)
         selectedID = server.id
-        table.reloadData()
+        reloadTable()
         selectRow()
         commit()
         window?.makeFirstResponder(urlField)
@@ -129,9 +144,10 @@ extension PreferencesWindowController {
     private func removeServer() {
         guard let index = selectedIndex else { return }
         let id = config.servers.remove(at: index).id
-        try? tokens.deleteToken(for: id)
+        let store = tokens
+        Task.detached { try? store.deleteToken(for: id) }
         selectedID = config.servers.indices.contains(index) ? config.servers[index].id : config.servers.last?.id
-        table.reloadData()
+        reloadTable()
         selectRow()
         commit()
     }

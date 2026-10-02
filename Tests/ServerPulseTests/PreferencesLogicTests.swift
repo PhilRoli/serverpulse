@@ -27,6 +27,12 @@ final class PreferencesLogicTests: XCTestCase {
         XCTAssertNil(PreferencesLogic.sshTarget("deploy@host; rm -rf"))
     }
 
+    func testSSHEdit() {
+        XCTAssertEqual(PreferencesLogic.sshEdit("  "), .clear)
+        XCTAssertEqual(PreferencesLogic.sshEdit(" a@b "), .set("a@b"))
+        XCTAssertEqual(PreferencesLogic.sshEdit("a b;"), .invalid)
+    }
+
     func testNewServerNaming() {
         XCTAssertEqual(PreferencesLogic.newServer(existing: []).name, "Server 1")
         XCTAssertEqual(PreferencesLogic.newServer(existing: [.fixture(), .fixture()]).name, "Server 3")
