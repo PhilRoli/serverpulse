@@ -42,42 +42,48 @@ extension Container {
     }
 }
 
+struct HostCPU: Codable, Equatable {
+    var cores: Int?
+    var pct: Double?
+    var load1m: Double?
+
+    private enum CodingKeys: String, CodingKey {
+        case cores, pct
+        case load1m = "load_1m"
+    }
+}
+
+struct HostMemory: Codable, Equatable {
+    var usedMb: Int?
+    var totalMb: Int?
+
+    var usedPct: Int? {
+        guard let usedMb, let totalMb, totalMb > 0 else { return nil }
+        return Int((Double(usedMb) * 100 / Double(totalMb)).rounded())
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case usedMb = "used_mb"
+        case totalMb = "total_mb"
+    }
+}
+
+struct HostDisk: Codable, Equatable {
+    var path: String?
+    var usedPct: Int?
+
+    private enum CodingKeys: String, CodingKey {
+        case path
+        case usedPct = "used_pct"
+    }
+}
+
+/// Explicit snake_case keys: `.convertFromSnakeCase` would turn `load_1m` into `load1M`.
+/// Host types are top-level (aliased here) to stay within SwiftLint's `nesting` rule.
 struct AgentSnapshot: Codable, Equatable {
-    struct CPU: Codable, Equatable {
-        var cores: Int?
-        var pct: Double?
-        var load1m: Double?
-
-        private enum CodingKeys: String, CodingKey {
-            case cores, pct
-            case load1m = "load_1m"
-        }
-    }
-
-    struct Memory: Codable, Equatable {
-        var usedMb: Int?
-        var totalMb: Int?
-
-        var usedPct: Int? {
-            guard let usedMb, let totalMb, totalMb > 0 else { return nil }
-            return Int((Double(usedMb) * 100 / Double(totalMb)).rounded())
-        }
-
-        private enum CodingKeys: String, CodingKey {
-            case usedMb = "used_mb"
-            case totalMb = "total_mb"
-        }
-    }
-
-    struct Disk: Codable, Equatable {
-        var path: String?
-        var usedPct: Int?
-
-        private enum CodingKeys: String, CodingKey {
-            case path
-            case usedPct = "used_pct"
-        }
-    }
+    typealias CPU = HostCPU
+    typealias Memory = HostMemory
+    typealias Disk = HostDisk
 
     var version: Int
     var hostname: String?
@@ -92,46 +98,6 @@ struct AgentSnapshot: Codable, Equatable {
         case version, hostname, cpu, memory, disk, containers
         case uptimeS = "uptime_s"
         case dockerError = "docker_error"
-    }
-}
-
-// In extensions so the memberwise initializers are kept.
-extension AgentSnapshot.CPU {
-    init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        cores = try values.decodeIfPresent(Int.self, forKey: .cores)
-        pct = try values.decodeIfPresent(Double.self, forKey: .pct)
-        load1m = try values.decodeIfPresent(Double.self, forKey: .load1m)
-    }
-}
-
-extension AgentSnapshot.Memory {
-    init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        usedMb = try values.decodeIfPresent(Int.self, forKey: .usedMb)
-        totalMb = try values.decodeIfPresent(Int.self, forKey: .totalMb)
-    }
-}
-
-extension AgentSnapshot.Disk {
-    init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        path = try values.decodeIfPresent(String.self, forKey: .path)
-        usedPct = try values.decodeIfPresent(Int.self, forKey: .usedPct)
-    }
-}
-
-extension AgentSnapshot {
-    init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        version = try values.decode(Int.self, forKey: .version)
-        hostname = try values.decodeIfPresent(String.self, forKey: .hostname)
-        uptimeS = try values.decodeIfPresent(Int.self, forKey: .uptimeS)
-        cpu = try values.decode(CPU.self, forKey: .cpu)
-        memory = try values.decode(Memory.self, forKey: .memory)
-        disk = try values.decode(Disk.self, forKey: .disk)
-        containers = try values.decodeIfPresent([Container].self, forKey: .containers)
-        dockerError = try values.decodeIfPresent(String.self, forKey: .dockerError)
     }
 }
 

@@ -13,9 +13,7 @@ final class ModelsTests: XCTestCase {
                        {"name":"x","project":null,"state":"weird","health":"none","status":""}],
          "docker_error":null}
         """
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        let snap = try decoder.decode(AgentSnapshot.self, from: Data(json.utf8))
+        let snap = try JSONDecoder().decode(AgentSnapshot.self, from: Data(json.utf8))
         XCTAssertEqual(snap.cpu.load1m, 0.14)
         XCTAssertEqual(snap.memory.usedMb, 2072)
         XCTAssertEqual(snap.memory.usedPct, 54)
