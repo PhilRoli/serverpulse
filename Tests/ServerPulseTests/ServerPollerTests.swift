@@ -165,7 +165,7 @@ final class ServerPollerTests: XCTestCase {
         XCTAssertEqual(poller.states[server.id], .error(.unauthorized))
     }
 
-    func testRefreshNowSkipsParkedServers() async {
+    func testRefreshNowSkipsParkedServers() async throws {
         let second = ServerConfig.fixture(name: "Beta", url: "https://b.example/metrics")
         config.servers.append(second)
         tokens.tokens[second.id] = "tok2"
@@ -176,7 +176,15 @@ final class ServerPollerTests: XCTestCase {
         let calls = client.calls.count
         client.results = [.success(.fixture())]
         poller.refreshNow()
-        for _ in 0..<5 { await Task.yield() }
+        let deadline = Date().addingTimeInterval(2)
+        while client.calls.count <= calls, Date() < deadline {
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        guard client.calls.count > calls else {
+            XCTFail("refreshNow never fetched the healthy server within 2s")
+            return
+        }
+        try await Task.sleep(nanoseconds: 50_000_000)
         let newCalls = client.calls.dropFirst(calls)
         XCTAssertEqual(newCalls.map(\.token), ["tok2"])
     }
