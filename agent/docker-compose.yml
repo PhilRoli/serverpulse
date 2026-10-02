@@ -1,0 +1,13 @@
+services:
+  agent:
+    build: .
+    restart: unless-stopped
+    read_only: true
+    ports:
+      - "127.0.0.1:4099:5000"
+    env_file: .env
+    group_add:
+      - "${DOCKER_GID}"
+    volumes:
+      - /:/host-root:ro
+      - /var/run/docker.sock:/var/run/docker.sock
