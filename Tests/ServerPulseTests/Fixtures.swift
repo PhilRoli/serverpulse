@@ -31,3 +31,21 @@ final class TestDefaults {
     lazy var defaults = UserDefaults(suiteName: name)!
     func tearDown() { defaults.removePersistentDomain(forName: name) }
 }
+
+enum JSONFixtures {
+    static let v2 = """
+    {"version":2,"hostname":"rettstat-1","uptime_s":345600,
+     "cpu":{"cores":2,"pct":12.5,"load_1m":0.14},
+     "memory":{"used_mb":2072,"total_mb":3819},
+     "disk":{"path":"/","used_pct":71},
+     "containers":[{"name":"convex-backend-1","project":"convex","state":"running",
+                    "health":"healthy","status":"Up 4 days (healthy)"}],
+     "docker_error":null}
+    """
+
+    /// Shape served by the old Flask agent.
+    static let v1 = """
+    {"containers":[{"name":"web","status":"Up 2 days","running":true}],
+     "cpu_load_1m":0.14,"memory":{"used_mb":3000,"total_mb":8192},"disk_pct":45}
+    """
+}
