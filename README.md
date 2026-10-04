@@ -26,7 +26,7 @@ ssh user@host 'mkdir -p /opt/apps/metrics-agent && cd /opt/apps/metrics-agent &&
 ./agent/deploy.sh user@host
 ```
 
-`deploy.sh` syncs the agent, sets `DOCKER_GID`, runs `docker compose up -d --build` and checks `/health`. The agent listens on `127.0.0.1:4099`; put a TLS reverse proxy in front, e.g. Caddy:
+`deploy.sh` syncs the agent, sets `DOCKER_GID`, runs `docker compose up -d --build` and checks `/health`. The agent listens on `127.0.0.1:4099` by default; set `BIND_ADDR=<lan-ip>` in `.env` to listen on a LAN address instead (plain HTTP, so only on a trusted network). Otherwise put a TLS reverse proxy in front, e.g. Caddy:
 
 ```
 metrics.example.com {
