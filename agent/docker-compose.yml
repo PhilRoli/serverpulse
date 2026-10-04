@@ -9,7 +9,7 @@ services:
         max-file: "3"
     read_only: true
     ports:
-      - "127.0.0.1:4099:5000"
+      - "${BIND_ADDR:-127.0.0.1}:4099:5000"
     env_file: .env
     group_add:
       - "${DOCKER_GID}"

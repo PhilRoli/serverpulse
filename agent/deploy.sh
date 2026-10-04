@@ -25,8 +25,9 @@ else
     echo "DOCKER_GID=$GID" >> .env
 fi
 docker compose up -d --build
+BIND="$(sed -n "s/^BIND_ADDR=//p" .env)"
 for _ in 1 2 3 4 5; do
-    if curl -fsS localhost:4099/health; then echo; exit 0; fi
+    if curl -fsS "${BIND:-127.0.0.1}:4099/health"; then echo; exit 0; fi
     sleep 2
 done
 echo "health check failed" >&2
