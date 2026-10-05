@@ -20,8 +20,9 @@ extension AgentSnapshot {
 }
 
 extension ServerConfig {
-    static func fixture(name: String = "Alpha", url: String = "https://a.example/metrics") -> ServerConfig {
-        ServerConfig(id: UUID(), name: name, url: URL(string: url)!, sshTarget: nil)
+    static func fixture(name: String = "Alpha", url: String = "https://a.example/metrics",
+                        lanOnly: Bool = false) -> ServerConfig {
+        ServerConfig(id: UUID(), name: name, url: URL(string: url)!, sshTarget: nil, lanOnly: lanOnly)
     }
 }
 

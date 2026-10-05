@@ -37,6 +37,7 @@ enum HealthEvaluator {
         let make = { (kind: Issue.Kind, subject: String?, value: Int?) in
             Issue(serverID: server.id, serverName: server.name, kind: kind, subject: subject, value: value)
         }
+        if server.lanOnly && state.isUnreachable { return [] }
         switch state {
         case .unconfigured, .loading:
             return []

@@ -19,6 +19,7 @@ final class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     let urlField = NSTextField()
     let tokenField = NSSecureTextField()
     let sshField = NSTextField()
+    let lanOnlyCheck = NSButton(checkboxWithTitle: "Only reachable on its own network", target: nil, action: nil)
     let testButton = NSButton(title: "Test", target: nil, action: nil)
     let testResult = NSTextField(labelWithString: "")
     let intervalPopup = NSPopUpButton()
@@ -27,7 +28,7 @@ final class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     let notifyCheck = NSButton(checkboxWithTitle: "Notifications", target: nil, action: nil)
     let loginCheck = NSButton(checkboxWithTitle: "Launch at login", target: nil, action: nil)
 
-    var detailControls: [NSControl] { [nameField, urlField, tokenField, sshField, testButton] }
+    var detailControls: [NSControl] { [nameField, urlField, tokenField, sshField, lanOnlyCheck, testButton] }
     var selectedIndex: Int? { config.servers.firstIndex { $0.id == selectedID } }
     var selectedServer: ServerConfig? { selectedIndex.map { config.servers[$0] } }
 

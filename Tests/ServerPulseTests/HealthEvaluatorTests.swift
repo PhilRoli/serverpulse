@@ -81,4 +81,16 @@ final class HealthEvaluatorTests: XCTestCase {
         XCTAssertTrue(agent.isAgentLevel)
         XCTAssertFalse(agent.isSnapshotDerived)
     }
+
+    func testLanOnlyServerIgnoresUnreachable() {
+        let lan = ServerConfig.fixture(lanOnly: true)
+        let issues = { (state: ServerState) in
+            HealthEvaluator.issues(server: lan, state: state, thresholds: self.thresholds).map(\.kind)
+        }
+        XCTAssertEqual(issues(.error(.unreachable)), [])
+        XCTAssertEqual(issues(.stale(.fixture(diskPct: 99), at: at, error: .unreachable)), [])
+        XCTAssertEqual(issues(.error(.unauthorized)), [.authFailed])
+        XCTAssertEqual(issues(.error(.http(502))), [.agentUnreachable])
+        XCTAssertEqual(issues(.ok(.fixture(diskPct: 99), at: at)), [.diskHigh])
+    }
 }

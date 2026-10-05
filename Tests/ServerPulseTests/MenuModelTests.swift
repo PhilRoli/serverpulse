@@ -63,6 +63,12 @@ final class MenuModelTests: XCTestCase {
         XCTAssertEqual(result.last, .message("⚠︎ Docker unavailable"))
     }
 
+    func testLanOnlyUnreachableShowsNeutralMessage() {
+        let server = ServerConfig.fixture(name: "Pi", lanOnly: true)
+        XCTAssertEqual(rows(server, .error(.unreachable)).last, .message("Not on its network"))
+        XCTAssertEqual(rows(server, .error(.unauthorized)).last, .message("⚠︎ Token rejected"))
+    }
+
     func testSSHRowAndSeparators() {
         var first = ServerConfig.fixture(name: "A")
         first.sshTarget = "deploy@1.2.3.4"
