@@ -60,6 +60,8 @@ extension PreferencesWindowController {
         configure(urlField, #selector(urlEdited), placeholder: "https://metrics.example.com/metrics")
         configure(tokenField, #selector(tokenEdited))
         configure(sshField, #selector(sshEdited), placeholder: "user@host")
+        lanOnlyCheck.target = self
+        lanOnlyCheck.action = #selector(lanOnlyToggled)
         testButton.target = self
         testButton.action = #selector(testClicked)
         testButton.bezelStyle = .rounded
@@ -68,6 +70,7 @@ extension PreferencesWindowController {
         let grid = NSGridView(views: [
             [label("Name"), nameField], [label("URL"), urlField],
             [label("Token"), tokenField], [label("SSH"), sshField],
+            [NSGridCell.emptyContentView, lanOnlyCheck],
             [NSGridCell.emptyContentView, testRow]
         ])
         grid.rowSpacing = 8

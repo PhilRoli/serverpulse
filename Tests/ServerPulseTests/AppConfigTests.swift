@@ -46,4 +46,12 @@ final class AppConfigTests: XCTestCase {
         config.diskWarnPct = 70
         XCTAssertEqual(config.thresholds, Thresholds(diskWarnPct: 70, memWarnPct: 90))
     }
+
+    func testServerWithoutLanOnlyDecodesAsFalse() throws {
+        let id = UUID()
+        let json = #"{"id":"\#(id.uuidString)","name":"Pi","url":"http://pi.local:9100/metrics"}"#
+        let server = try JSONDecoder().decode(ServerConfig.self, from: Data(json.utf8))
+        XCTAssertFalse(server.lanOnly)
+        XCTAssertEqual(server.id, id)
+    }
 }

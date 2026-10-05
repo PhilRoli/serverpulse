@@ -56,7 +56,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         var anyStale = false
         for server in config.servers {
             let state = poller.states[server.id] ?? .loading
-            anyStale = anyStale || state.isStale
+            anyStale = anyStale || (state.isStale && !(server.lanOnly && state.isUnreachable))
             issues += HealthEvaluator.issues(server: server, state: state, thresholds: config.thresholds,
                                              active: tracker.activeKeys(for: server.id))
         }

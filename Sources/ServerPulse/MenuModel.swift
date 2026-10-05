@@ -56,12 +56,15 @@ enum MenuModel {
             rows = [.header(name: server.name, updatedAt: nil, stale: false), .message("No token")]
         case .loading:
             rows = [.header(name: server.name, updatedAt: nil, stale: false), .message("Connecting…")]
+        case .error(.unreachable) where server.lanOnly:
+            rows = [.header(name: server.name, updatedAt: nil, stale: false), .message("Not on its network")]
         case .error(let error):
             rows = [.header(name: server.name, updatedAt: nil, stale: false), .message("⚠︎ \(error.label)")]
         case .ok(let snapshot, let at):
             rows = [.header(name: server.name, updatedAt: at, stale: false)] + body(snapshot, thresholds)
         case .stale(let snapshot, let at, _):
             rows = [.header(name: server.name, updatedAt: at, stale: true)] + body(snapshot, thresholds)
+            if server.lanOnly && state.isUnreachable { rows.insert(.message("Not on its network"), at: 1) }
         }
         if let target = server.sshTarget, !target.isEmpty { rows.append(.ssh(target: target)) }
         return rows

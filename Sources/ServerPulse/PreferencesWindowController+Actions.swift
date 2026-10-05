@@ -25,6 +25,7 @@ extension PreferencesWindowController {
         nameField.stringValue = server?.name ?? ""
         urlField.stringValue = server?.url.absoluteString ?? ""
         sshField.stringValue = server?.sshTarget ?? ""
+        lanOnlyCheck.state = server?.lanOnly == true ? .on : .off
         tokenField.stringValue = ""
         tokenField.placeholderString = nil
         testResult.stringValue = ""
@@ -77,6 +78,10 @@ extension PreferencesWindowController {
             NSSound.beep()
             sshField.stringValue = selectedServer?.sshTarget ?? ""
         }
+    }
+
+    @objc func lanOnlyToggled() {
+        updateSelected { $0.lanOnly = lanOnlyCheck.state == .on }
     }
 
     @objc func tokenEdited() {

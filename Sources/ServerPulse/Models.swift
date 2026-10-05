@@ -5,6 +5,20 @@ struct ServerConfig: Codable, Equatable, Identifiable {
     var name: String
     var url: URL
     var sshTarget: String?
+    /// Only reachable from its own network (e.g. a Raspberry Pi at home); being unreachable is expected elsewhere.
+    var lanOnly: Bool = false
+}
+
+// In an extension so the memberwise initializer is kept; configs saved before `lanOnly` still decode.
+extension ServerConfig {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(UUID.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        url = try c.decode(URL.self, forKey: .url)
+        sshTarget = try c.decodeIfPresent(String.self, forKey: .sshTarget)
+        lanOnly = try c.decodeIfPresent(Bool.self, forKey: .lanOnly) ?? false
+    }
 }
 
 enum ContainerState: String, Codable, Equatable {
@@ -138,6 +152,13 @@ enum ServerState: Equatable {
     var isStale: Bool {
         if case .stale = self { return true }
         return false
+    }
+
+    var isUnreachable: Bool {
+        switch self {
+        case .error(.unreachable), .stale(_, _, .unreachable): return true
+        default: return false
+        }
     }
 }
 
