@@ -1,5 +1,6 @@
 import AppKit
 import UserNotifications
+import MenuBarKit
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -16,7 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var wakeObserver: NSObjectProtocol?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.mainMenu = MainMenu.make()
+        NSApp.mainMenu = MainMenu.make(appName: "ServerPulse")
         UNUserNotificationCenter.current().delegate = presenter
         notifications.requestAuthorization()
         wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(

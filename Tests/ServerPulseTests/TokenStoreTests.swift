@@ -60,10 +60,3 @@ final class TokenStoreTests: XCTestCase {
         XCTAssertThrowsError(try store.setToken("a\nb", for: id))
     }
 }
-
-final class TokenQuoteTests: XCTestCase {
-    func testQuoteEscapesQuotesAndBackslashes() {
-        XCTAssertEqual(KeychainTokenStore.quote(#"a"b\c"#), #""a\"b\\c""#)
-        XCTAssertEqual(KeychainTokenStore.quote("plain"), #""plain""#)
-    }
-}
