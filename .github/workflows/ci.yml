@@ -6,22 +6,15 @@ on:
   pull_request:
 
 jobs:
-  build-and-test:
+  ci:
+    uses: PhilRoli/menubar-kit/.github/workflows/ci.yml@v1
+    with:
+      app: ServerPulse
+
+  agent:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v7
 
-      - name: Build
-        run: swift build
-
-      - name: Test
-        run: swift test
-
       - name: Agent tests
         run: python3 -m unittest discover -s agent -v
-
-      - name: Install SwiftLint
-        run: brew install swiftlint
-
-      - name: Lint
-        run: swiftlint --strict
