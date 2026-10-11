@@ -47,10 +47,10 @@ The agent reads `/proc`, `statvfs` on the host root (read-only mount) and `GET /
 
 ## Development
 
-- Build + install locally: `./rebuild.sh` (installs to /Applications, ad-hoc signed).
+- Build + install locally: `./rebuild.sh` (installs to /Applications, ad-hoc signed; needs [menubar-kit](https://github.com/PhilRoli/menubar-kit) cloned next to this repo, or `MENUBAR_KIT` set).
 - Tests: `swift test` and `python3 -m unittest discover -s agent`. Lint: `swiftlint --strict`.
 - Release: push a tag `vX.Y.Z`. The Release workflow builds a universal app, publishes `ServerPulse-X.Y.Z.app.zip` and updates `Casks/serverpulse.rb` in `PhilRoli/homebrew-tap` (needs the `HOMEBREW_TAP_TOKEN` repo secret).
-- Regenerate the icon: `scripts/make-icon.sh`.
+- Regenerate the icon: `../menubar-kit/scripts/make-icon.sh 🖥️`.
 
 ## License
 
