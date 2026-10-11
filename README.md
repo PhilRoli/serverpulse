@@ -1,6 +1,4 @@
-<p align="center"><img src="Packaging/icon.png" width="128" alt="ServerPulse icon"></p>
-
-# ServerPulse
+# <img src="Packaging/icon.png" width="48" height="48" align="absmiddle" alt="ServerPulse icon"> ServerPulse
 
 Menu bar app showing the health of your Docker servers: containers grouped by compose project, CPU / RAM / disk, and notifications when something goes down. Each server runs a tiny agent (`agent/`).
 
