@@ -6,7 +6,8 @@ extension PreferencesWindowController {
         guard let window else { return }
         let stack = NSStackView(views: [
             sectionLabel("Servers"), serverList(), detailGrid(),
-            separator(), sectionLabel("General"), generalGrid()
+            separator(), sectionLabel("General"), generalGrid(),
+            PreferencesLayout.versionLabel()
         ])
         stack.orientation = .vertical
         stack.alignment = .leading
