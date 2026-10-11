@@ -1,12 +1,6 @@
 import Foundation
+import MenuBarKit
 import UserNotifications
-
-protocol NotificationScheduler {
-    func add(_ request: UNNotificationRequest, withCompletionHandler completionHandler: (@Sendable (Error?) -> Void)?)
-    func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool
-}
-
-extension UNUserNotificationCenter: NotificationScheduler {}
 
 struct NotificationMessage: Equatable {
     var title: String
@@ -65,11 +59,4 @@ final class NotificationManager {
     }
 }
 
-/// Shows banners even while ServerPulse is the active app (e.g. Preferences open).
-final class NotificationPresenter: NSObject, UNUserNotificationCenterDelegate {
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
-                                withCompletionHandler completionHandler:
-                                    @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.banner, .sound])
-    }
-}
+typealias NotificationPresenter = BannerNotificationPresenter

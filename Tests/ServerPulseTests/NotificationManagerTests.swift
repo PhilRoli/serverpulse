@@ -1,5 +1,6 @@
 import UserNotifications
 import XCTest
+import MenuBarKit
 @testable import ServerPulse
 
 private final class FakeScheduler: NotificationScheduler, @unchecked Sendable {

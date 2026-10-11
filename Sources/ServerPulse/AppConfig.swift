@@ -1,4 +1,5 @@
 import Foundation
+import MenuBarKit
 
 struct AppConfig: Codable, Equatable {
     static let intervals: [TimeInterval] = [15, 30, 60, 120]
@@ -31,23 +32,5 @@ extension AppConfig {
     }
 }
 
-final class AppConfigStore {
-    private let defaults: UserDefaults
-    private let key = "config"
-
-    init(defaults: UserDefaults = .standard) {
-        self.defaults = defaults
-    }
-
-    func load() -> AppConfig {
-        guard let data = defaults.data(forKey: key),
-              let config = try? JSONDecoder().decode(AppConfig.self, from: data)
-        else { return AppConfig() }
-        return config
-    }
-
-    func save(_ config: AppConfig) {
-        guard let data = try? JSONEncoder().encode(config) else { return }
-        defaults.set(data, forKey: key)
-    }
-}
+extension AppConfig: DefaultInitializable {}
+typealias AppConfigStore = JSONDefaultsStore<AppConfig>
