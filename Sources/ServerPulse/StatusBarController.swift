@@ -1,4 +1,5 @@
 import AppKit
+import MenuBarKit
 
 @MainActor
 final class StatusBarController: NSObject, NSMenuDelegate {
@@ -17,7 +18,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     }
 
     private var headers: [Header] = []
-    private var ticker: Timer?
+    private let ticker = MenuOpenTicker()
 
     override init() {
         super.init()
@@ -42,19 +43,12 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         rebuild()
     }
 
-    /// Menus run the event loop in `.eventTracking` mode, so the ticker must be scheduled in `.common`.
     func menuWillOpen(_ menu: NSMenu) {
-        ticker?.invalidate()
-        let timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { self?.tickHeaders() }
-        }
-        RunLoop.main.add(timer, forMode: .common)
-        ticker = timer
+        ticker.start { [weak self] in self?.tickHeaders() }
     }
 
     func menuDidClose(_ menu: NSMenu) {
-        ticker?.invalidate()
-        ticker = nil
+        ticker.stop()
     }
 
     // MARK: Building
@@ -103,19 +97,12 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         }
     }
 
-    /// Enabled but action-less, so colours aren't dimmed the way disabled items are.
     private func info(_ title: NSAttributedString, indent: Int = 1) -> NSMenuItem {
-        let item = NSMenuItem(title: title.string, action: nil, keyEquivalent: "")
-        item.attributedTitle = title
-        item.indentationLevel = indent
-        item.isEnabled = true
-        return item
+        .info(title, indent: indent)
     }
 
     private func action(_ title: String, _ selector: Selector, key: String = "") -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: selector, keyEquivalent: key)
-        item.target = self
-        return item
+        .item(title, action: selector, key: key, target: self)
     }
 
     private func tickHeaders() {

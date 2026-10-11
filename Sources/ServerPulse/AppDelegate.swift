@@ -20,10 +20,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.mainMenu = MainMenu.make(appName: "ServerPulse")
         UNUserNotificationCenter.current().delegate = presenter
         notifications.requestAuthorization()
-        wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(
-            forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.poller.refreshNow() }
-        }
+        wakeObserver = observeWake { [weak self] in self?.poller.refreshNow() }
         config = store.load()
 
         statusBar.rows = { [unowned self] in
