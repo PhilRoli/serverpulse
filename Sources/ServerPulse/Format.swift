@@ -18,6 +18,14 @@ enum Format {
         return "\(used)/\(total) GB"
     }
 
+    static func uptime(seconds: Int?) -> String {
+        guard let seconds else { return "–" }
+        let days = seconds / 86_400, hours = seconds % 86_400 / 3_600, minutes = seconds % 3_600 / 60
+        if days > 0 { return "\(days)d \(hours)h" }
+        if hours > 0 { return "\(hours)h \(minutes)m" }
+        return "\(minutes)m"
+    }
+
     static func age(since date: Date, now: Date) -> String {
         let seconds = max(0, Int(now.timeIntervalSince(date)))
         switch seconds {

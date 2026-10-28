@@ -83,6 +83,7 @@ enum MenuModel {
         return [
             MetricSegment(text: "CPU \(Format.percent(snapshot.cpu.pct))", high: false),
             MetricSegment(text: "RAM \(ram)", high: (memory.usedPct ?? 0) >= thresholds.memWarnPct),
+            MetricSegment(text: "Up \(Format.uptime(seconds: snapshot.uptimeS))", high: false),
             MetricSegment(text: "Disk \(Format.percent(snapshot.disk.usedPct))",
                           high: (snapshot.disk.usedPct ?? 0) >= thresholds.diskWarnPct)
         ]

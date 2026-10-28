@@ -17,6 +17,13 @@ final class FormatTests: XCTestCase {
         XCTAssertEqual(Format.gigabytes(usedMB: nil, totalMB: 3819), "–")
     }
 
+    func testUptime() {
+        XCTAssertEqual(Format.uptime(seconds: nil), "–")
+        XCTAssertEqual(Format.uptime(seconds: 300), "5m")
+        XCTAssertEqual(Format.uptime(seconds: 3 * 3_600 + 12 * 60), "3h 12m")
+        XCTAssertEqual(Format.uptime(seconds: 345_600 + 3 * 3_600), "4d 3h")
+    }
+
     func testAge() {
         let now = Date(timeIntervalSince1970: 1_000_000)
         XCTAssertEqual(Format.age(since: now, now: now), "0s ago")
