@@ -33,6 +33,7 @@ final class MenuModelTests: XCTestCase {
         XCTAssertEqual(result[1], .metrics([
             MetricSegment(text: "CPU 13%", high: false),
             MetricSegment(text: "RAM 2.0/3.7 GB", high: false),
+            MetricSegment(text: "Up 1m", high: false),
             MetricSegment(text: "Disk 86%", high: true)
         ]))
         XCTAssertEqual(result[2], .message("No containers"))
