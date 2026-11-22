@@ -24,6 +24,7 @@ final class AppConfigTests: XCTestCase {
         config.servers[0].sshTarget = "deploy@1.2.3.4"
         config.pollInterval = 60
         config.diskWarnPct = 80
+        config.sshApp = "com.mitchellh.ghostty"
         store.save(config)
         XCTAssertEqual(store.load(), config)
     }

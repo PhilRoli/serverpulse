@@ -7,6 +7,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     var onPreferences: (() -> Void)?
     var rows: () -> [MenuRow] = { [] }
     var now: () -> Date = { Date() }
+    var sshApp: () -> String? = { nil }
 
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let menu = NSMenu()
@@ -172,10 +173,10 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     @objc private func preferences() { onPreferences?() }
 
     @objc private func openSSH(_ sender: NSMenuItem) {
-        guard let target = sender.representedObject as? String, let url = URL(string: "ssh://\(target)") else {
+        guard let target = sender.representedObject as? String else {
             NSSound.beep()
             return
         }
-        NSWorkspace.shared.open(url)
+        SSHLauncher.open(target: target, bundleID: sshApp())
     }
 }

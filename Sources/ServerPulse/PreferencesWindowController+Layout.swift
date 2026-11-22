@@ -77,7 +77,13 @@ extension PreferencesWindowController {
         intervalPopup.addItems(withTitles: AppConfig.intervals.map { "\(Int($0)) s" })
         diskPopup.addItems(withTitles: AppConfig.warnChoices.map { "\($0)%" })
         memPopup.addItems(withTitles: AppConfig.warnChoices.map { "\($0)%" })
-        for control in [intervalPopup, diskPopup, memPopup, notifyCheck] as [NSControl] {
+        sshAppPopup.addItem(withTitle: "System default")
+        sshAppPopup.lastItem?.representedObject = NSNull()
+        for terminal in SSHTerminal.installed {
+            sshAppPopup.addItem(withTitle: terminal.title)
+            sshAppPopup.lastItem?.representedObject = terminal.rawValue
+        }
+        for control in [intervalPopup, diskPopup, memPopup, sshAppPopup, notifyCheck] as [NSControl] {
             control.target = self
             control.action = #selector(generalChanged)
         }
@@ -85,6 +91,7 @@ extension PreferencesWindowController {
         loginCheck.action = #selector(loginToggled)
         let grid = NSGridView(views: [
             [label("Interval"), intervalPopup], [label("Disk warn"), diskPopup], [label("RAM warn"), memPopup],
+            [label("SSH app"), sshAppPopup],
             [NSGridCell.emptyContentView, notifyCheck], [NSGridCell.emptyContentView, loginCheck]
         ])
         grid.rowSpacing = 8
