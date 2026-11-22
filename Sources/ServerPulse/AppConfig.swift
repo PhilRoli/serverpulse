@@ -10,11 +10,13 @@ struct AppConfig: Codable, Equatable {
     var diskWarnPct: Int = 85
     var memWarnPct: Int = 90
     var notificationsEnabled: Bool = true
+    /// Bundle ID of the terminal used for "Open SSH"; nil means the system default `ssh://` handler.
+    var sshApp: String?
 
     var thresholds: Thresholds { Thresholds(diskWarnPct: diskWarnPct, memWarnPct: memWarnPct) }
 
     private enum CodingKeys: String, CodingKey {
-        case servers, pollInterval, diskWarnPct, memWarnPct, notificationsEnabled
+        case servers, pollInterval, diskWarnPct, memWarnPct, notificationsEnabled, sshApp
     }
 }
 
@@ -29,6 +31,7 @@ extension AppConfig {
         memWarnPct = try c.decodeIfPresent(Int.self, forKey: .memWarnPct) ?? base.memWarnPct
         notificationsEnabled = try c.decodeIfPresent(Bool.self, forKey: .notificationsEnabled)
             ?? base.notificationsEnabled
+        sshApp = try c.decodeIfPresent(String.self, forKey: .sshApp)
     }
 }
 

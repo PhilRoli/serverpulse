@@ -26,6 +26,7 @@ final class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     let intervalPopup = NSPopUpButton()
     let diskPopup = NSPopUpButton()
     let memPopup = NSPopUpButton()
+    let sshAppPopup = NSPopUpButton()
     let notifyCheck = NSButton(checkboxWithTitle: "Notifications", target: nil, action: nil)
     let loginCheck = NSButton(checkboxWithTitle: "Launch at login", target: nil, action: nil)
 
