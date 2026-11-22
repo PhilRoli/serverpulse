@@ -27,6 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             MenuModel.rows(servers: self.config.servers, states: self.poller.states,
                            thresholds: self.config.thresholds)
         }
+        statusBar.sshApp = { [unowned self] in self.config.sshApp }
         statusBar.onRefresh = { [unowned self] in self.poller.refreshNow() }
         statusBar.onPreferences = { [unowned self] in self.showPreferences() }
         poller.onUpdate = { [unowned self] id, state in self.handle(id, state) }

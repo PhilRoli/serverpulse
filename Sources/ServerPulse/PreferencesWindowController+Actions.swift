@@ -7,6 +7,8 @@ extension PreferencesWindowController {
         intervalPopup.selectItem(at: AppConfig.intervals.firstIndex(of: config.pollInterval) ?? 1)
         diskPopup.selectItem(at: AppConfig.warnChoices.firstIndex(of: config.diskWarnPct) ?? 3)
         memPopup.selectItem(at: AppConfig.warnChoices.firstIndex(of: config.memWarnPct) ?? 4)
+        let sshItem = sshAppPopup.itemArray.first { $0.representedObject as? String == config.sshApp }
+        sshAppPopup.select(sshItem ?? sshAppPopup.item(at: 0))
         notifyCheck.state = config.notificationsEnabled ? .on : .off
         loginCheck.state = loginItem.isEnabled ? .on : .off
     }
@@ -161,6 +163,7 @@ extension PreferencesWindowController {
         config.pollInterval = AppConfig.intervals[max(0, intervalPopup.indexOfSelectedItem)]
         config.diskWarnPct = AppConfig.warnChoices[max(0, diskPopup.indexOfSelectedItem)]
         config.memWarnPct = AppConfig.warnChoices[max(0, memPopup.indexOfSelectedItem)]
+        config.sshApp = sshAppPopup.selectedItem?.representedObject as? String
         config.notificationsEnabled = notifyCheck.state == .on
         commit()
     }
